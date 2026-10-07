@@ -1,0 +1,1077 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
+<title>Motion-Labor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap">
+<style>
+  /* Layout: ruhige Spalte mit Intro, darunter ein Raster aus Demo-Karten, am Ende eine Review-Tabelle */
+  :root {
+    --bg: #f5f6f8;
+    --surface: #ffffff;
+    --sunken: #eef0f3;
+    --fg: #15171c;
+    --muted: #5b626e;
+    --line: rgba(21, 23, 28, 0.08);
+    --accent: #3456f0;
+    --accent-fg: #ffffff;
+    --accent-soft: rgba(52, 86, 240, 0.1);
+    --danger: #e0393e;
+    --shadow: 0 0 0 1px var(--line), 0 1px 2px rgba(21, 23, 28, 0.04), 0 4px 12px rgba(21, 23, 28, 0.04);
+    --shadow-pop: 0 0 0 1px var(--line), 0 8px 24px rgba(21, 23, 28, 0.12), 0 2px 6px rgba(21, 23, 28, 0.06);
+
+    --font-sans: "Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    --font-mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+    --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+    --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+    --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0d0e11;
+      --surface: #16181d;
+      --sunken: #1d2026;
+      --fg: #eceef2;
+      --muted: #969daa;
+      --line: rgba(255, 255, 255, 0.08);
+      --accent: #7a91ff;
+      --accent-fg: #0d0e11;
+      --accent-soft: rgba(122, 145, 255, 0.14);
+      --danger: #ff6166;
+      --shadow: 0 0 0 1px var(--line), 0 1px 2px rgba(0, 0, 0, 0.3);
+      --shadow-pop: 0 0 0 1px var(--line), 0 8px 24px rgba(0, 0, 0, 0.5);
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0d0e11;
+    --surface: #16181d;
+    --sunken: #1d2026;
+    --fg: #eceef2;
+    --muted: #969daa;
+    --line: rgba(255, 255, 255, 0.08);
+    --accent: #7a91ff;
+    --accent-fg: #0d0e11;
+    --accent-soft: rgba(122, 145, 255, 0.14);
+    --danger: #ff6166;
+    --shadow: 0 0 0 1px var(--line), 0 1px 2px rgba(0, 0, 0, 0.3);
+    --shadow-pop: 0 0 0 1px var(--line), 0 8px 24px rgba(0, 0, 0, 0.5);
+    color-scheme: dark;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-sans);
+    font-size: 15px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding-inline: 20px;
+    padding-block: 56px 72px;
+    display: flex;
+    flex-direction: column;
+    gap: 56px;
+  }
+  code, kbd, .mono { font-family: var(--font-mono); font-size: 0.86em; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* Intro */
+  .hero { display: flex; flex-direction: column; gap: 16px; max-width: 680px; }
+  .eyebrow {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  h1 {
+    margin: 0;
+    font-size: clamp(32px, 5vw, 48px);
+    line-height: 1.08;
+    letter-spacing: -0.03em;
+    font-weight: 600;
+    text-wrap: balance;
+  }
+  .lede { margin: 0; color: var(--muted); font-size: 17px; max-width: 60ch; }
+  .curves { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+  .curve {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 10px 6px 6px;
+    background: var(--surface);
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .curve svg { width: 28px; height: 28px; background: var(--sunken); border-radius: 5px; }
+  .curve b { color: var(--fg); font-weight: 500; }
+
+  /* Raster */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 440px), 1fr));
+    gap: 20px;
+  }
+  .card {
+    background: var(--surface);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    overflow: hidden;
+  }
+  .card-head { padding: 20px 20px 0; display: flex; flex-direction: column; gap: 6px; }
+  .tag {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+  .card h2 { margin: 0; font-size: 18px; font-weight: 600; letter-spacing: -0.015em; text-wrap: balance; }
+  .card-head p { margin: 0; color: var(--muted); font-size: 14px; }
+  .stage {
+    position: relative;
+    margin: 16px 20px 0;
+    min-height: 220px;
+    background: var(--sunken);
+    border-radius: 10px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+  }
+  .card-foot {
+    padding: 14px 20px 18px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--muted);
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+  .mini-label { font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
+  .hint { font-size: 13px; color: var(--muted); margin: 0; text-align: center; }
+
+  /* Buttons (scale on press ist überall aktiv) */
+  .btn {
+    appearance: none;
+    border: 0;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 9px 14px;
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--fg);
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    transition: transform 160ms var(--ease-out), background-color 150ms ease, box-shadow 150ms ease;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+  }
+  .btn:active { transform: scale(0.97); }
+  .btn.primary { background: var(--accent); color: var(--accent-fg); box-shadow: none; }
+  .btn.flat:active { transform: none; }
+  .btn.ghost { background: transparent; box-shadow: none; color: var(--muted); }
+  @media (hover: hover) and (pointer: fine) {
+    .btn:hover { box-shadow: var(--shadow-pop); }
+    .btn.primary:hover { box-shadow: none; filter: brightness(1.06); }
+    .btn.ghost:hover { color: var(--fg); box-shadow: none; }
+  }
+  .row { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; align-items: center; }
+
+  .seg {
+    display: inline-flex;
+    padding: 3px;
+    background: var(--surface);
+    border-radius: 9px;
+    box-shadow: var(--shadow);
+  }
+  .seg input { position: absolute; opacity: 0; pointer-events: none; }
+  .seg label {
+    padding: 5px 12px;
+    font-size: 13px;
+    border-radius: 6px;
+    color: var(--muted);
+    cursor: pointer;
+    transition: background-color 150ms ease, color 150ms ease;
+  }
+  .seg input:checked + label { background: var(--sunken); color: var(--fg); }
+  .seg input:focus-visible + label { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+  /* 1 · Easing-Duell */
+  .duel { display: grid; grid-template-columns: 1fr 1fr; align-items: start; justify-items: center; gap: 16px 12px; padding-bottom: 140px; }
+  .duel > .btn { grid-column: 1 / -1; }
+  .duel-col { display: flex; flex-direction: column; gap: 8px; align-items: flex-start; width: 100%; max-width: 180px; }
+  .select {
+    position: relative;
+    width: 100%;
+    padding: 8px 12px;
+    background: var(--surface);
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    font-size: 14px;
+    display: flex;
+    justify-content: space-between;
+  }
+  .menu {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(100% + 6px);
+    margin: 0;
+    padding: 4px;
+    list-style: none;
+    background: var(--surface);
+    border-radius: 10px;
+    box-shadow: var(--shadow-pop);
+    transform-origin: top center;
+    opacity: 0;
+    transform: scale(0.96) translateY(-4px);
+    pointer-events: none;
+    z-index: 2;
+  }
+  .menu li { padding: 6px 8px; border-radius: 6px; font-size: 13px; }
+  .menu li:first-child { background: var(--sunken); }
+  .menu.open { opacity: 1; transform: none; }
+  .menu.bad { transition: opacity 300ms ease-in, transform 300ms ease-in; }
+  .menu.good { transition: opacity 200ms var(--ease-out), transform 200ms var(--ease-out); }
+
+  /* 3 · Popover */
+  .pop-wrap { position: relative; }
+  .popover {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    width: 220px;
+    padding: 12px;
+    background: var(--surface);
+    border-radius: 12px;
+    box-shadow: var(--shadow-pop);
+    font-size: 13px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 2;
+  }
+  .popover .link-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 6px 8px;
+    background: var(--sunken);
+    border-radius: 6px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .popover[data-mode="good"] {
+    transform-origin: top left;
+    transition: opacity 200ms var(--ease-out), transform 200ms var(--ease-out);
+    opacity: 0;
+    transform: scale(0.95);
+    pointer-events: none;
+  }
+  .popover[data-mode="bad"] {
+    transform-origin: center;
+    transition: all 300ms ease-in;
+    transform: scale(0);
+    pointer-events: none;
+  }
+  .popover.open { opacity: 1; transform: scale(1); pointer-events: auto; }
+  .stage.pop { justify-content: flex-start; padding-top: 28px; min-height: 260px; }
+
+  /* 4 · Toasts */
+  .stage.toasts { justify-content: flex-start; min-height: 280px; overflow: hidden; }
+  .toaster {
+    position: absolute;
+    left: 50%;
+    bottom: 18px;
+    width: min(300px, calc(100% - 32px));
+    min-height: 54px;
+    transform: translateX(-50%);
+  }
+  .toast {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 12px 14px;
+    background: var(--surface);
+    border-radius: 10px;
+    box-shadow: var(--shadow-pop);
+    font-size: 14px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    transform-origin: bottom center;
+    transition: transform 400ms ease, opacity 400ms ease;
+  }
+  .toast .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex: none; }
+  .toast small { margin-left: auto; color: var(--muted); font-family: var(--font-mono); font-size: 11px; }
+
+  /* 5 · Halten zum Löschen */
+  .file {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: min(280px, 100%);
+    padding: 10px 12px;
+    background: var(--surface);
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    font-size: 14px;
+    transition: opacity 250ms var(--ease-out), transform 250ms var(--ease-out), filter 250ms var(--ease-out);
+  }
+  .file .ico {
+    width: 30px; height: 36px; border-radius: 5px; flex: none;
+    background: var(--sunken);
+    display: grid; place-items: center;
+    font-family: var(--font-mono); font-size: 9px; color: var(--muted);
+  }
+  .file small { display: block; color: var(--muted); font-size: 12px; }
+  .file.gone { opacity: 0; transform: scale(0.96); filter: blur(2px); }
+  .hold {
+    position: relative;
+    overflow: hidden;
+    color: var(--danger);
+    min-width: 200px;
+  }
+  .hold-overlay {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    background: var(--danger);
+    color: #fff;
+    clip-path: inset(0 100% 0 0);
+    transition: clip-path 200ms ease-out;
+  }
+  .hold.holding { transform: scale(0.97); }
+  .hold.holding .hold-overlay { clip-path: inset(0 0 0 0); transition: clip-path 2s linear; }
+
+  /* 6 · Tabs */
+  .tabs-demo { display: flex; flex-direction: column; gap: 14px; width: 100%; align-items: center; }
+  .tabs { position: relative; }
+  .tablist {
+    display: flex;
+    gap: 2px;
+    padding: 3px;
+    background: var(--surface);
+    border-radius: 999px;
+    box-shadow: var(--shadow);
+  }
+  .tablist button {
+    appearance: none; border: 0; background: transparent; font: inherit;
+    font-size: 13px; font-weight: 500;
+    padding: 6px 14px;
+    border-radius: 999px;
+    color: var(--muted);
+    cursor: pointer;
+  }
+  .tabs.naive .tablist button { transition: background-color 200ms ease, color 200ms ease; }
+  .tabs.naive .tablist button[aria-selected="true"] { background: var(--accent); color: var(--accent-fg); }
+  .tablist.clone {
+    position: absolute;
+    inset: 0;
+    background: transparent;
+    box-shadow: none;
+    pointer-events: none;
+    transition: clip-path 300ms var(--ease-in-out);
+  }
+  .tablist.clone button { background: var(--accent); color: var(--accent-fg); }
+
+  /* 7 · Sheet */
+  .stage.sheet-stage { min-height: 300px; overflow: hidden; justify-content: flex-start; }
+  .sheet {
+    position: absolute;
+    left: 14px;
+    right: 14px;
+    bottom: 0;
+    height: 200px;
+    background: var(--surface);
+    border-radius: 16px 16px 0 0;
+    box-shadow: var(--shadow-pop);
+    padding: 10px 18px 18px;
+    touch-action: none;
+    cursor: grab;
+    user-select: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .sheet:active { cursor: grabbing; }
+  .sheet .grip { width: 36px; height: 4px; border-radius: 2px; background: var(--line); margin: 0 auto 6px; box-shadow: 0 0 0 1px var(--line); }
+  .sheet h3 { margin: 0; font-size: 16px; }
+  .sheet p { margin: 0; font-size: 13px; color: var(--muted); }
+  .readout {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+    align-self: flex-start;
+  }
+
+  /* 8 · Tooltips */
+  .toolbar-wrap { position: relative; }
+  .toolbar { display: flex; gap: 4px; padding: 4px; background: var(--surface); border-radius: 10px; box-shadow: var(--shadow); }
+  .toolbar button {
+    appearance: none; border: 0; background: transparent; color: var(--fg);
+    width: 36px; height: 36px; border-radius: 7px; cursor: pointer;
+    display: grid; place-items: center;
+    font: 600 15px/1 var(--font-sans);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .toolbar button:hover { background: var(--sunken); }
+  }
+  .tip {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 0;
+    padding: 5px 9px;
+    border-radius: 7px;
+    background: var(--fg);
+    color: var(--bg);
+    font-size: 12px;
+    white-space: nowrap;
+    pointer-events: none;
+    transform-origin: bottom center;
+    opacity: 0;
+    transform: translateX(-50%) scale(0.97);
+    transition: transform 125ms var(--ease-out), opacity 125ms var(--ease-out);
+  }
+  .tip kbd { opacity: 0.6; margin-left: 6px; }
+  .tip.show { opacity: 1; transform: translateX(-50%) scale(1); }
+  .tip[data-instant] { transition-duration: 0ms; }
+  .check { display: inline-flex; gap: 8px; align-items: center; font-size: 13px; color: var(--muted); cursor: pointer; }
+  .check input { accent-color: var(--accent); }
+
+  /* 9 · Stagger */
+  .feed { list-style: none; margin: 0; padding: 0; width: min(300px, 100%); display: flex; flex-direction: column; gap: 6px; }
+  .feed li {
+    padding: 9px 12px;
+    background: var(--surface);
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    font-size: 13px;
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .feed li span:last-child { color: var(--muted); font-family: var(--font-mono); font-size: 11px; }
+  .feed.play li { animation: rise 300ms var(--ease-out) both; animation-delay: calc(var(--i) * 50ms); }
+  .feed.play-all li { animation: rise 300ms var(--ease-out) both; }
+  @keyframes rise { from { opacity: 0; transform: translateY(8px); } }
+
+  /* 10 · Palette */
+  .stage.palette-stage { min-height: 240px; }
+  .palette {
+    position: absolute;
+    top: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(320px, calc(100% - 32px));
+    background: var(--surface);
+    border-radius: 12px;
+    box-shadow: var(--shadow-pop);
+    overflow: hidden;
+  }
+  .palette input {
+    width: 100%;
+    border: 0;
+    padding: 12px 14px;
+    font: inherit;
+    font-size: 14px;
+    background: transparent;
+    color: var(--fg);
+    border-bottom: 1px solid var(--line);
+    outline: none;
+  }
+  .palette ul { list-style: none; margin: 0; padding: 4px; font-size: 13px; }
+  .palette li { padding: 7px 10px; border-radius: 6px; display: flex; justify-content: space-between; }
+  .palette li:first-child { background: var(--sunken); }
+  .palette li kbd { color: var(--muted); }
+  kbd.key {
+    display: inline-block;
+    padding: 1px 6px;
+    border-radius: 5px;
+    background: var(--surface);
+    box-shadow: var(--shadow);
+    font-size: 12px;
+  }
+
+  /* Review */
+  .review { display: flex; flex-direction: column; gap: 16px; }
+  .review h2 { margin: 0; font-size: 24px; letter-spacing: -0.02em; font-weight: 600; }
+  .review > p { margin: 0; color: var(--muted); max-width: 62ch; }
+  .review-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  pre.snippet {
+    margin: 0;
+    padding: 16px 18px;
+    background: var(--surface);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 1.6;
+    overflow-x: auto;
+  }
+  pre.snippet .c { color: var(--muted); }
+  .table-wrap { overflow-x: auto; background: var(--surface); border-radius: 12px; box-shadow: var(--shadow); }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 640px; }
+  th, td { text-align: left; padding: 11px 16px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  tr:last-child td { border-bottom: 0; }
+  th { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); font-weight: 500; }
+  td code { white-space: nowrap; }
+  td:first-child code { color: var(--danger); }
+  td:nth-child(2) code { color: var(--accent); }
+  td:last-child { color: var(--muted); }
+
+  footer { color: var(--muted); font-size: 13px; display: flex; flex-wrap: wrap; gap: 6px 16px; }
+  footer a { color: inherit; }
+
+  @media (max-width: 480px) {
+    .duel { grid-template-columns: 1fr; padding-bottom: 20px; }
+    .duel-col { max-width: none; }
+    .duel-col + .duel-col { margin-bottom: 120px; }
+    .menu.bad { z-index: 3; }
+  }
+
+  /* Weniger Bewegung heißt: keine Positionsbewegung, aber Deckkraft und Farbe bleiben */
+  @media (prefers-reduced-motion: reduce) {
+    .menu, .popover, .toast, .tip, .file, .tablist.clone, .sheet { transition-property: opacity, clip-path !important; }
+    .menu, .popover:not(.open) { transform: none !important; }
+    .popover:not(.open) { opacity: 0; }
+    .feed.play li, .feed.play-all li { animation-name: fade; }
+    @keyframes fade { from { opacity: 0; } }
+  }
+</style>
+
+<main class="wrap">
+  <header class="hero">
+    <p class="eyebrow">Skill · emil-design-eng</p>
+    <h1>Kleine Details, die man spürt, bevor man sie sieht</h1>
+    <p class="lede">Zehn Live-Demos der Regeln aus Emil Kowalskis Design-Engineering-Skill. Viele Karten zeigen Vorher und Nachher nebeneinander. Klicken, halten, ziehen, mit der Maus drüberfahren.</p>
+    <div class="curves" aria-label="Die drei Easing-Kurven aus dem Skill">
+      <span class="curve"><svg viewBox="0 0 28 28" aria-hidden="true"><path d="M4 24 C 10.4 0, 12.9 4, 24 4" fill="none" stroke="var(--accent)" stroke-width="1.6"/></svg><span><b>--ease-out</b> 0.23, 1, 0.32, 1</span></span>
+      <span class="curve"><svg viewBox="0 0 28 28" aria-hidden="true"><path d="M4 24 C 19.4 24, 7.5 4, 24 4" fill="none" stroke="var(--accent)" stroke-width="1.6"/></svg><span><b>--ease-in-out</b> 0.77, 0, 0.175, 1</span></span>
+      <span class="curve"><svg viewBox="0 0 28 28" aria-hidden="true"><path d="M4 24 C 10.4 9.6, 4 4, 24 4" fill="none" stroke="var(--accent)" stroke-width="1.6"/></svg><span><b>--ease-drawer</b> 0.32, 0.72, 0, 1</span></span>
+    </div>
+  </header>
+
+  <section class="grid">
+    <!-- 1 -->
+    <article class="card">
+      <div class="card-head">
+        <span class="tag">Easing</span>
+        <h2>ease-in wirkt träge, auch bei gleicher Dauer</h2>
+        <p>Beide Menüs öffnen gleichzeitig. Links startet die Bewegung langsam, genau dann, wenn das Auge hinschaut. Rechts kommt sofort Feedback.</p>
+      </div>
+      <div class="stage duel">
+        <button class="btn primary" id="duel-btn" type="button" aria-pressed="false">Beide öffnen</button>
+        <div class="duel-col">
+          <span class="mini-label">Vorher · ease-in 300ms</span>
+          <div class="select">Projekt <span aria-hidden="true">▾</span>
+            <ul class="menu bad" data-duel><li>Website</li><li>Newsletter</li><li>Shop</li></ul>
+          </div>
+        </div>
+        <div class="duel-col">
+          <span class="mini-label">Nachher · ease-out 200ms</span>
+          <div class="select">Projekt <span aria-hidden="true">▾</span>
+            <ul class="menu good" data-duel><li>Website</li><li>Newsletter</li><li>Shop</li></ul>
+          </div>
+        </div>
+      </div>
+      <div class="card-foot">transition: transform 200ms cubic-bezier(0.23, 1, 0.32, 1)</div>
+    </article>
+
+    <!-- 2 -->
+    <article class="card">
+      <div class="card-head">
+        <span class="tag">Feedback</span>
+        <h2>Buttons müssen auf Druck reagieren</h2>
+        <p>Gedrückt halten. Ein Hauch von <code>scale(0.97)</code> sagt: Die Oberfläche hat dich gehört.</p>
+      </div>
+      <div class="stage">
+        <div class="row">
+          <div style="display:flex;flex-direction:column;gap:8px;align-items:center">
+            <span class="mini-label">Vorher</span>
+            <button class="btn flat" type="button">Speichern</button>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px;align-items:center">
+            <span class="mini-label">Nachher</span>
+            <button class="btn primary" type="button">Speichern</button>
+          </div>
+        </div>
+        <p class="hint">Hover-Effekte sind hinter <code>(hover: hover) and (pointer: fine)</code>, damit Touch-Geräte keine klebenden Hover-Zustände bekommen.</p>
+      </div>
+      <div class="card-foot">.button:active { transform: scale(0.97) } · 160ms ease-out</div>
+    </article>
+
+    <!-- 3 -->
+    <article class="card">
+      <div class="card-head">
+        <span class="tag">Herkunft</span>
+        <h2>Nichts erscheint aus dem Nichts</h2>
+        <p>Vorher: <code>scale(0)</code> aus der Mitte mit <code>transition: all</code>. Nachher: <code>scale(0.95)</code> plus Deckkraft, und das Popover wächst aus seinem Auslöser.</p>
+      </div>
+      <div class="stage pop">
+        <div class="seg" role="radiogroup" aria-label="Variante">
+          <input type="radio" name="pop-mode" id="pop-bad" value="bad"><label for="pop-bad">Vorher</label>
+          <input type="radio" name="pop-mode" id="pop-good" value="good" checked><label for="pop-good">Nachher</label>
+        </div>
+        <div class="pop-wrap">
+          <button class="btn" id="pop-btn" type="button" aria-expanded="false" aria-controls="popover">Teilen</button>
+          <div class="popover" id="popover" data-mode="good">
+            <strong>Link teilen</strong>
+            <div class="link-row"><span>site.de/r/4kq9</span><span>Kopieren</span></div>
+            <span style="color:var(--muted)">Alle mit dem Link können lesen.</span>
+          </div>
+        </div>
+      </div>
+      <div class="card-foot">transform-origin: var(--transform-origin) · Modals bleiben zentriert</div>
+    </article>
+
+    <!-- 4 -->
+    <article class="card">
+      <div class="card-head">
+        <span class="tag">Unterbrechbar</span>
+        <h2>Transitions statt Keyframes für Toasts</h2>
+        <p>Schnell mehrmals klicken. Jeder Toast zielt mitten in der Bewegung neu, statt von vorn zu starten. Mit der Maus über den Stapel fächert er auf, und die Timer pausieren.</p>
+      </div>
+      <div class="stage toasts">
+        <button class="btn primary" id="toast-btn" type="button">Toast senden</button>
+        <div class="toaster" id="toaster" aria-live="polite"></div>
+      </div>
+      <div class="card-foot">transition: transform 400ms ease · Timer pausieren bei Hover und verstecktem Tab</div>
+    </article>
+
+    <!-- 5 -->
+    <article class="card">
+      <div class="card-head">
+        <span class="tag">Asymmetrie</span>
+        <h2>Langsam, wo du entscheidest. Schnell, wo das System antwortet</h2>
+        <p>Halten füllt den Button über 2s linear. Loslassen springt in 200ms zurück. Umgesetzt mit <code>clip-path: inset()</code>.</p>
+      </div>
+      <div class="stage">
+        <div class="file" id="file">
+          <span class="ico">PDF</span>
+          <span>Quartalsbericht-Q3.pdf<small>2,4 MB · geändert gestern</small></span>
+        </div>
+        <button class="btn hold" id="hold" type="button">
+          <span>Halten zum Löschen</span>
+          <span class="hold-overlay" aria-hidden="true">Halten zum Löschen</span>
+        </button>
+      </div>
+      <div class="card-foot">clip-path: inset(0 100% 0 0) → inset(0 0 0 0) · 2s linear / 200ms ease-out</div>
+    </article>
+
+    <!-- 6 -->
+    <article class="card">
+      <div class="card-head">
+        <span class="tag">clip-path</span>
+        <h2>Tabs mit sauberem Farbwechsel</h2>
+        <p>Vorher blenden zwei Tabs gleichzeitig über und man sieht beide Zustände. Nachher liegt eine eingefärbte Kopie der Liste darüber, und nur ihr Ausschnitt wandert.</p>
+      </div>
+      <div class="stage">
+        <div class="tabs-demo">
+          <span class="mini-label">Vorher</span>
+          <div class="tabs naive">
+            <div class="tablist" role="tablist" aria-label="Tabs Vorher">
+              <button role="tab" aria-selected="true" type="button">Übersicht</button>
+              <button role="tab" aria-selected="false" type="button">Aktivität</button>
+              <button role="tab" aria-selected="false" type="button">Einstellungen</button>
+            </div>
+          </div>
+          <span class="mini-label">Nachher</span>
+          <div class="tabs clipped" id="clip-tabs">
+            <div class="tablist" role="tablist" aria-label="Tabs Nachher">
+              <button role="tab" aria-selected="true" type="button">Übersicht</button>
+              <button role="tab" aria-selected="false" type="button">Aktivität</button>
+              <button role="tab" aria-selected="false" type="button">Einstellungen</button>
+            </div>
+            <div class="tablist clone" aria-hidden="true">
+              <button tabindex="-1" type="button">Übersicht</button>
+              <button tabindex="-1" type="button">Aktivität</button>
+              <button tabindex="-1" type="button">Einstellungen</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-foot">clip-path: inset(0 R 0 L round 999px) · 300ms ease-in-out</div>
+    </article>
+
+    <!-- 7 -->
+    <article class="card">
+      <div class="card-head">
+        <span class="tag">Gesten</span>
+        <h2>Ein schneller Wisch reicht</h2>
+        <p>Das Sheet schließt ab 40 % Strecke oder ab einer Geschwindigkeit von 0,11 px/ms. Nach oben gibt es Widerstand statt einer harten Wand.</p>
+      </div>
+      <div class="stage sheet-stage" id="sheet-stage">
+        <span class="readout" id="readout">v = 0,00 px/ms</span>
+        <button class="btn" id="sheet-open" type="button" hidden>Sheet öffnen</button>
+        <div class="sheet" id="sheet" role="dialog" aria-label="Beispiel-Sheet">
+          <div class="grip"></div>
+          <h3>Zieh mich nach unten</h3>
+          <p>Kurz und schnell wischen genügt. Langsam ziehen braucht mehr Strecke. Nach oben federt es nur leicht nach.</p>
+        </div>
+      </div>
+      <div class="card-foot">velocity = |Δy| / Δt · Pointer-Capture · Dämpfung an der Grenze</div>
+    </article>
+
+    <!-- 8 -->
+    <article class="card">
+      <div class="card-head">
+        <span class="tag">Tooltips</span>
+        <h2>Erst warten, danach sofort</h2>
+        <p>Der erste Tooltip wartet 500ms gegen versehentliches Auslösen. Gleitest du weiter, erscheinen die Nachbarn ohne Verzögerung und ohne Animation.</p>
+      </div>
+      <div class="stage">
+        <div class="toolbar-wrap">
+          <div class="toolbar" id="toolbar">
+            <button type="button" data-tip="Fett" data-key="⌘B" aria-label="Fett">B</button>
+            <button type="button" data-tip="Kursiv" data-key="⌘I" aria-label="Kursiv" style="font-style:italic">I</button>
+            <button type="button" data-tip="Unterstrichen" data-key="⌘U" aria-label="Unterstrichen" style="text-decoration:underline">U</button>
+            <button type="button" data-tip="Durchgestrichen" data-key="⇧⌘X" aria-label="Durchgestrichen" style="text-decoration:line-through">S</button>
+          </div>
+          <div class="tip" id="tip" role="tooltip"></div>
+        </div>
+        <label class="check"><input type="checkbox" id="instant" checked> Sofort-Modus für Nachbarn</label>
+      </div>
+      <div class="card-foot">.tooltip[data-instant] { transition-duration: 0ms }</div>
+    </article>
+
+    <!-- 9 -->
+    <article class="card">
+      <div class="card-head">
+        <span class="tag">Stagger</span>
+        <h2>Kaskade statt Block</h2>
+        <p>50ms Versatz pro Eintrag. Kurz genug, dass nichts wartet, lang genug, dass das Auge der Liste folgt.</p>
+      </div>
+      <div class="stage">
+        <ul class="feed" id="feed">
+          <li style="--i:0"><span>Rechnung 1042 bezahlt</span><span>09:12</span></li>
+          <li style="--i:1"><span>Build erfolgreich · main</span><span>09:08</span></li>
+          <li style="--i:2"><span>Neuer Kommentar im Entwurf</span><span>08:51</span></li>
+          <li style="--i:3"><span>Backup abgeschlossen</span><span>08:30</span></li>
+          <li style="--i:4"><span>3 Aufgaben heute fällig</span><span>08:00</span></li>
+        </ul>
+        <div class="row">
+          <button class="btn" id="stagger-all" type="button">Alles auf einmal</button>
+          <button class="btn primary" id="stagger-on" type="button">Mit Stagger</button>
+        </div>
+      </div>
+      <div class="card-foot">animation-delay: calc(var(--i) * 50ms) · 300ms ease-out</div>
+    </article>
+
+    <!-- 10 -->
+    <article class="card">
+      <div class="card-head">
+        <span class="tag">Häufigkeit</span>
+        <h2>Tastatur-Aktionen werden nie animiert</h2>
+        <p>Eine Befehlspalette öffnest du hundertmal am Tag. Jede Animation würde sich wie Verzögerung anfühlen. Darum erscheint sie hier ohne Übergang.</p>
+      </div>
+      <div class="stage palette-stage" id="palette-stage">
+        <button class="btn" id="palette-btn" type="button" aria-expanded="false">Palette öffnen <kbd class="key">Strg K</kbd></button>
+        <p class="hint">Mit <kbd class="key">Esc</kbd> wieder schließen.</p>
+        <div class="palette" id="palette" hidden>
+          <input id="palette-input" type="text" placeholder="Befehl suchen …" aria-label="Befehl suchen">
+          <ul>
+            <li><span>Neue Seite</span><kbd>N</kbd></li>
+            <li><span>Suchen</span><kbd>/</kbd></li>
+            <li><span>Design-Review starten</span><kbd>R</kbd></li>
+          </ul>
+        </div>
+      </div>
+      <div class="card-foot">100+ mal am Tag → keine Animation. Nie.</div>
+    </article>
+  </section>
+
+  <section class="review">
+    <h2>So reviewt der Skill Code</h2>
+    <p>Der Skill schreibt für Reviews eine Tabelle mit Vorher, Nachher und Begründung vor. Hier angewendet auf typisches CSS, wie es ein Agent ohne Geschmack schreibt.</p>
+    <div class="review-grid">
+<pre class="snippet"><span class="c">/* Typischer Standard-Output */</span>
+.dropdown { transition: all 300ms ease-in; transform-origin: center; }
+.dropdown[data-state="closed"] { transform: scale(0); }
+.card:hover { transform: scale(1.05); }
+.toast { animation: slideIn 500ms; }
+.cmdk { animation: pop 250ms ease-out; }
+.button { cursor: pointer; } <span class="c">/* kein :active */</span></pre>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Vorher</th><th>Nachher</th><th>Warum</th></tr></thead>
+          <tbody>
+            <tr><td><code>transition: all 300ms</code></td><td><code>transition: transform 200ms var(--ease-out)</code></td><td>Konkrete Eigenschaften nennen, UI-Animationen unter 300ms halten</td></tr>
+            <tr><td><code>ease-in</code> am Dropdown</td><td><code>cubic-bezier(0.23, 1, 0.32, 1)</code></td><td>ease-in verzögert genau den Moment, in dem man hinschaut</td></tr>
+            <tr><td><code>scale(0)</code></td><td><code>scale(0.95); opacity: 0</code></td><td>Nichts in der echten Welt erscheint aus dem Nichts</td></tr>
+            <tr><td><code>transform-origin: center</code></td><td><code>var(--transform-origin)</code></td><td>Popover wachsen aus ihrem Auslöser, nur Modals bleiben zentriert</td></tr>
+            <tr><td><code>.card:hover</code> ohne Media Query</td><td><code>@media (hover: hover) and (pointer: fine)</code></td><td>Touch löst Hover beim Tippen aus und bleibt hängen</td></tr>
+            <tr><td><code>@keyframes slideIn</code> am Toast</td><td><code>transition: transform 400ms ease</code></td><td>Toasts kommen schnell hintereinander; Transitions lassen sich unterbrechen</td></tr>
+            <tr><td><code>animation: pop</code> an der Palette</td><td>keine Animation</td><td>Per Tastatur geöffnet, hunderte Male am Tag</td></tr>
+            <tr><td>kein <code>:active</code>-Zustand</td><td><code>:active { transform: scale(0.97) }</code></td><td>Buttons müssen auf Druck sofort reagieren</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span>Regeln aus dem Skill <a href="https://github.com/emilkowalski/skill" target="_blank" rel="noopener">emilkowalski/skill</a> (MIT).</span>
+    <span>Bei reduzierter Bewegung bleiben nur Deckkraft- und Farbübergänge.</span>
+  </footer>
+</main>
+
+<script>
+(() => {
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+
+  /* 1 · Easing-Duell */
+  const duelBtn = $('#duel-btn');
+  duelBtn.addEventListener('click', () => {
+    const open = duelBtn.getAttribute('aria-pressed') !== 'true';
+    duelBtn.setAttribute('aria-pressed', String(open));
+    duelBtn.textContent = open ? 'Beide schließen' : 'Beide öffnen';
+    $$('[data-duel]').forEach(m => m.classList.toggle('open', open));
+  });
+
+  /* 3 · Popover */
+  const pop = $('#popover'), popBtn = $('#pop-btn');
+  $$('input[name="pop-mode"]').forEach(r => r.addEventListener('change', () => {
+    pop.classList.remove('open');
+    popBtn.setAttribute('aria-expanded', 'false');
+    pop.dataset.mode = r.value;
+  }));
+  popBtn.addEventListener('click', () => {
+    const open = !pop.classList.contains('open');
+    pop.classList.toggle('open', open);
+    popBtn.setAttribute('aria-expanded', String(open));
+  });
+
+  /* 4 · Toasts */
+  const toaster = $('#toaster');
+  const messages = ['Änderungen gespeichert', 'Link kopiert', 'Datei hochgeladen', 'Einladung verschickt', 'Entwurf archiviert'];
+  let toasts = [], msgIndex = 0, expanded = false;
+  const GAP = 8, LIFETIME = 4000;
+
+  function layout() {
+    const live = toasts.filter(t => !t.removing);
+    let offset = 0;
+    live.forEach((t, i) => {
+      const y = expanded ? -offset : -i * 12;
+      const s = expanded ? 1 : 1 - i * 0.06;
+      t.y = y; t.s = s;
+      t.el.style.transform = `translateY(${y}px) scale(${s})`;
+      t.el.style.opacity = i >= 3 ? '0' : '1';
+      t.el.style.zIndex = String(100 - i);
+      offset += t.el.offsetHeight + GAP;
+    });
+    // Lücken zwischen aufgefächerten Toasts gehören zur Hover-Fläche
+    toaster.style.height = expanded && live.length ? `${offset - GAP}px` : '';
+  }
+  function schedule(t, ms) {
+    clearTimeout(t.timer);
+    t.started = Date.now();
+    t.remaining = ms;
+    t.timer = setTimeout(() => removeToast(t), ms);
+  }
+  function pauseAll() {
+    toasts.forEach(t => { clearTimeout(t.timer); t.remaining = Math.max(800, t.remaining - (Date.now() - t.started)); });
+  }
+  function resumeAll() { toasts.forEach(t => { if (!t.removing) schedule(t, t.remaining); }); }
+  function removeToast(t) {
+    if (t.removing) return;
+    t.removing = true;
+    clearTimeout(t.timer);
+    t.el.style.opacity = '0';
+    t.el.style.transform = `translateY(${t.y + 24}px) scale(${t.s})`;
+    setTimeout(() => { t.el.remove(); toasts = toasts.filter(x => x !== t); }, 400);
+    layout();
+  }
+  $('#toast-btn').addEventListener('click', () => {
+    const el = document.createElement('div');
+    el.className = 'toast';
+    el.innerHTML = `<span class="dot"></span><span>${messages[msgIndex++ % messages.length]}</span><small>gerade eben</small>`;
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(100%)';
+    toaster.appendChild(el);
+    const t = { el, y: 0, s: 1 };
+    toasts.unshift(t);
+    if (!expanded && !document.hidden) schedule(t, LIFETIME); else t.remaining = LIFETIME;
+    toasts.filter(x => !x.removing).slice(5).forEach(removeToast);
+    requestAnimationFrame(() => requestAnimationFrame(layout));
+  });
+  toaster.addEventListener('pointerenter', () => { expanded = true; pauseAll(); layout(); });
+  toaster.addEventListener('pointerleave', () => { expanded = false; resumeAll(); layout(); });
+  document.addEventListener('visibilitychange', () => { document.hidden ? pauseAll() : (!expanded && resumeAll()); });
+
+  /* 5 · Halten zum Löschen */
+  const hold = $('#hold'), file = $('#file');
+  let deleted = false;
+  const start = () => { if (!deleted) hold.classList.add('holding'); };
+  const stop = () => hold.classList.remove('holding');
+  hold.addEventListener('pointerdown', e => { if (e.button === 0) start(); });
+  ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => hold.addEventListener(ev, stop));
+  hold.addEventListener('keydown', e => { if ((e.key === ' ' || e.key === 'Enter') && !e.repeat) { e.preventDefault(); start(); } });
+  hold.addEventListener('keyup', e => { if (e.key === ' ' || e.key === 'Enter') stop(); });
+  hold.addEventListener('click', () => { if (deleted) restore(); });
+  $('.hold-overlay', hold).addEventListener('transitionend', e => {
+    if (e.propertyName !== 'clip-path' || !hold.classList.contains('holding')) return;
+    deleted = true;
+    stop();
+    file.classList.add('gone');
+    hold.firstElementChild.textContent = 'Gelöscht · Wiederherstellen';
+    $('.hold-overlay', hold).textContent = '';
+  });
+  function restore() {
+    deleted = false;
+    file.classList.remove('gone');
+    hold.firstElementChild.textContent = 'Halten zum Löschen';
+    $('.hold-overlay', hold).textContent = 'Halten zum Löschen';
+  }
+
+  /* 6 · Tabs */
+  $$('.tabs.naive [role="tab"]').forEach((tab, _, all) => tab.addEventListener('click', () => {
+    all.forEach(t => t.setAttribute('aria-selected', String(t === tab)));
+  }));
+  const clipTabs = $('#clip-tabs');
+  const realTabs = $$('[role="tab"]', clipTabs);
+  const clone = $('.clone', clipTabs);
+  function clipTo(tab) {
+    const list = tab.parentElement;
+    const l = tab.offsetLeft, r = list.offsetWidth - (tab.offsetLeft + tab.offsetWidth);
+    clone.style.clipPath = `inset(3px ${r}px 3px ${l}px round 999px)`;
+  }
+  realTabs.forEach(tab => tab.addEventListener('click', () => {
+    realTabs.forEach(t => t.setAttribute('aria-selected', String(t === tab)));
+    clipTo(tab);
+  }));
+  const initClip = () => {
+    clone.style.transition = 'none';
+    clipTo(realTabs.find(t => t.getAttribute('aria-selected') === 'true'));
+    clone.offsetWidth;
+    clone.style.transition = '';
+  };
+  initClip();
+  if (document.fonts) document.fonts.ready.then(initClip);
+  window.addEventListener('resize', initClip);
+
+  /* 7 · Sheet */
+  const sheet = $('#sheet'), readout = $('#readout'), sheetOpen = $('#sheet-open');
+  let drag = null;
+  const fmt = n => n.toFixed(2).replace('.', ',');
+  sheet.addEventListener('pointerdown', e => {
+    if (drag) return; // zweiter Finger wird ignoriert
+    drag = { id: e.pointerId, y0: e.clientY, t0: performance.now(), dy: 0 };
+    sheet.setPointerCapture(e.pointerId);
+    sheet.style.transition = 'none';
+  });
+  sheet.addEventListener('pointermove', e => {
+    if (!drag || e.pointerId !== drag.id) return;
+    let dy = e.clientY - drag.y0;
+    if (dy < 0) dy = -40 * (1 - 1 / (1 + -dy / 80)); // Reibung statt Wand
+    drag.dy = dy;
+    sheet.style.transform = `translateY(${dy}px)`;
+  });
+  const endDrag = e => {
+    if (!drag || e.pointerId !== drag.id) return;
+    const dt = Math.max(1, performance.now() - drag.t0);
+    const v = Math.abs(drag.dy) / dt;
+    const dismiss = drag.dy > 0 && (drag.dy > sheet.offsetHeight * 0.4 || v > 0.11);
+    readout.textContent = `v = ${fmt(v)} px/ms → ${dismiss ? 'schließen' : 'zurückfedern'}`;
+    sheet.style.transition = 'transform 500ms var(--ease-drawer)';
+    sheet.style.transform = dismiss ? 'translateY(105%)' : 'translateY(0)';
+    sheetOpen.hidden = !dismiss;
+    drag = null;
+  };
+  sheet.addEventListener('pointerup', endDrag);
+  sheet.addEventListener('pointercancel', endDrag);
+  sheetOpen.addEventListener('click', () => {
+    sheetOpen.hidden = true;
+    sheet.style.transition = 'transform 500ms var(--ease-drawer)';
+    sheet.style.transform = 'translateY(0)';
+    readout.textContent = 'v = 0,00 px/ms';
+  });
+
+  /* 8 · Tooltips */
+  const tip = $('#tip'), instantBox = $('#instant');
+  let tipOpen = false, lastClose = 0, delayTimer;
+  function showTip(btn, instant) {
+    if (instant) tip.setAttribute('data-instant', ''); else tip.removeAttribute('data-instant');
+    tip.innerHTML = `${btn.dataset.tip}<kbd>${btn.dataset.key}</kbd>`;
+    tip.style.left = `${btn.offsetLeft + btn.offsetWidth / 2}px`;
+    tip.classList.add('show');
+    tipOpen = true;
+  }
+  function hideTip() {
+    clearTimeout(delayTimer);
+    if (!tipOpen) return;
+    tip.removeAttribute('data-instant');
+    tip.classList.remove('show');
+    tipOpen = false;
+    lastClose = Date.now();
+  }
+  $$('#toolbar button').forEach(btn => {
+    const enter = () => {
+      clearTimeout(delayTimer);
+      const warm = tipOpen || Date.now() - lastClose < 300;
+      if (warm && instantBox.checked) { showTip(btn, true); return; }
+      if (tipOpen) hideTip();
+      delayTimer = setTimeout(() => showTip(btn, false), 500);
+    };
+    btn.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') enter(); });
+    btn.addEventListener('pointerleave', hideTip);
+    btn.addEventListener('focus', () => showTip(btn, tipOpen));
+    btn.addEventListener('blur', hideTip);
+  });
+
+  /* 9 · Stagger */
+  const feed = $('#feed');
+  const replay = cls => {
+    feed.classList.remove('play', 'play-all');
+    feed.offsetWidth;
+    feed.classList.add(cls);
+  };
+  $('#stagger-on').addEventListener('click', () => replay('play'));
+  $('#stagger-all').addEventListener('click', () => replay('play-all'));
+
+  /* 10 · Palette */
+  const palette = $('#palette'), paletteBtn = $('#palette-btn'), paletteInput = $('#palette-input');
+  function setPalette(open, refocus = true) {
+    palette.hidden = !open;
+    paletteBtn.setAttribute('aria-expanded', String(open));
+    if (open) paletteInput.focus(); else if (refocus) paletteBtn.focus();
+  }
+  paletteBtn.addEventListener('click', () => setPalette(palette.hidden));
+  document.addEventListener('keydown', e => {
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); setPalette(palette.hidden); }
+    else if (e.key === 'Escape' && !palette.hidden) setPalette(false);
+  });
+  document.addEventListener('pointerdown', e => {
+    if (!palette.hidden && !palette.contains(e.target) && !paletteBtn.contains(e.target)) setPalette(false, false);
+  });
+})();
+</script>
+
+</body>
+</html>
