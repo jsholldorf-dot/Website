@@ -1,0 +1,16 @@
+PAJA’S RESTAURANT – VOLLSTÄNDIGER QUELLTEXT
+
+Enthalten: Website, Design, Fotos/Logo, Speisekarte mit täglichen Pizzen und Dressing-Pflichtwahl, Bestellsystem, Teambereich, Reservierungen, Gästeliste, Einwilligungen und Brevo-Anbindung, Datenbankschema/Migrationen, Konfiguration, Abhängigkeiten und Lockdatei.
+
+Projekt: React / TypeScript / Vinext, Cloudflare Workers und D1 (SQLite).
+Quellstand: fc914979acbb32d7fff144b48c85a3b28c31c199
+
+Entwicklung: Node.js >=22.13.0, pnpm (Version siehe package.json).
+pnpm install
+pnpm dev
+
+Build: pnpm build
+
+.env.example enthält nur leere Zugangsdaten und deaktivierten Nachrichtenversand. Für einen eigenen Betrieb müssen Datenbank, Anmeldung und Laufzeitvariablen eingerichtet werden. Die vorhandene .openai/hosting.json verweist auf die bestehende Paja’s-Site.
+
+Nicht enthalten: geheime API-Schlüssel/Teamcode, .env, Kundendaten und Datenbankinhalte, Git-Verlauf, node_modules oder generierte Builddateien.

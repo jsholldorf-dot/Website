@@ -1,0 +1,1 @@
+import {requireChatGPTUser} from "@/app/chatgpt-auth";import {isStaff} from "@/lib/server";import Team from "./team";export const dynamic="force-dynamic";export default async function Page(){await requireChatGPTUser('/team');return <Team authenticated={await isStaff()}/>}

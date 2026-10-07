@@ -1,0 +1,1 @@
+import {config,failure} from "@/lib/server";export async function GET(){try{return Response.json(await config(),{headers:{"Cache-Control":"no-store"}})}catch{return failure()}}

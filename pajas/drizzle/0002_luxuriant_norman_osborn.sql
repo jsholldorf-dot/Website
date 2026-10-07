@@ -1,0 +1,1 @@
+CREATE INDEX `idx_reservations_date_time` ON `reservations` (`date`,`time`);
